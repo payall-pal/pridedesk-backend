@@ -18,34 +18,34 @@ const upload = multer({ storage: multer.memoryStorage() })
 
 // post- data ko server pe daal rhe h then server ---> database m 
 
-app.post("/create-post", upload.single("image"), async (req, res) => {
+// app.post("/create-post", upload.single("image"), async (req, res) => {
 
-    console.log(req.file)
-    const result = await uploadFile(req.file.buffer)
+//     console.log(req.file)
+//     const result = await uploadFile(req.file.buffer)
 
-    const post = await postModel.create({
-        image: result.url,
-        caption: req.body.caption
-    })
+//     const post = await postModel.create({
+//         image: result.url,
+//         caption: req.body.caption
+//     })
 
 
-    res.status(201).json({
-        message: "post created"
-    })
-})
+//     res.status(201).json({
+//         message: "post created"
+//     })
+// })
 
-app.get("/posts", async (req, res) => {
+// app.get("/posts", async (req, res) => {
 
-    const posts = await postModel.find()
+//     const posts = await postModel.find()
 
-    console.log(posts)
+//     console.log(posts)
 
-    return res.status(200).json({
-        message: "Post fetch successfully",
-        posts
-    })
+//     return res.status(200).json({
+//         message: "Post fetch successfully",
+//         posts
+//     })
 
-})
+// })
 
 
 // Email data ko server pe daal rhe h then gmail pe send kr denge
@@ -110,8 +110,6 @@ app.get("/email-data", async (req, res) => {
         emailData
     })
 })
-
-
 
 //review 
 
