@@ -52,7 +52,7 @@ const upload = multer({ storage: multer.memoryStorage() })
 
 app.post("/contact-email", upload.single(), async (req, res) => {
     console.log("1. sending POST request")
-    name = req.body.name,
+    namee = req.body.name,
         email = req.body.email,
         message = req.body.message
     try {
@@ -63,21 +63,25 @@ app.post("/contact-email", upload.single(), async (req, res) => {
             message: req.body.message
         })
 
+        if(!process.env.EMAIL || !process.env.PASSWORD){
+            throw new Error("Can't access credentials")
+        }
+
 
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: process.env.EMAIL,      // yha pe 
-                pass: process.env.APP_PASSWORD
+                user: process.env.EMAIL,      
+                pass: process.env.PASSWORD
             }
         })
         
         const mailOptions = {
             from: req.body.email,
             to: process.env.EMAIL,
-            subject: `New Contact Message form ${name}`,
+            subject: `New Contact Message form ${namee}`,
             text: `
-            Name: ${name},
+            Name: ${namee},
             Email: ${email},
             Message: ${message} `
         }
