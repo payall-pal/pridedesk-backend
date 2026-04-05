@@ -51,29 +51,29 @@ const upload = multer({ storage: multer.memoryStorage() })
 // Email data ko server pe daal rhe h then gmail pe send kr denge
 
 app.post("/contact-email", upload.single(), async (req, res) => {
-
-        name = req.body.name,
+    console.log("1. sending POST request")
+    name = req.body.name,
         email = req.body.email,
         message = req.body.message
-
-    const emaill = emailModel.create({
-        name: req.body.name,
-        email: req.body.email,
-        message: req.body.message
-    })
-
     try {
+
+        const modell = await emailModel.create({
+            name: req.body.name,
+            email: req.body.email,
+            message: req.body.message
+        })
+
 
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: process.env.EMAIL,
+                user: process.env.EMAIL,      // yha pe 
                 pass: process.env.APP_PASSWORD
             }
         })
-
+        
         const mailOptions = {
-            from: email,
+            from: req.body.email,
             to: process.env.EMAIL,
             subject: `New Contact Message form ${name}`,
             text: `
@@ -82,17 +82,20 @@ app.post("/contact-email", upload.single(), async (req, res) => {
             Message: ${message} `
         }
 
+
+
         await transporter.sendMail(mailOptions)
-        res.status(200).json({
+
+        return res.status(200).json({
             success: true,
             message: "Email Sent!"
         })
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Error sending email"
+            message: "Something went wrong"
         })
 
     }
@@ -132,8 +135,8 @@ app.post("/give-review", upload.single(), async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user:process.env.EMAIL,
-                pass:process.env.APP_PASSWORD
+                user: process.env.EMAIL,
+                pass: process.env.APP_PASSWORD
             }
         })
 
@@ -205,7 +208,7 @@ app.post("/apply", upload.single(), async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Email Sent!",
-            
+
         })
     }
     catch (err) {
