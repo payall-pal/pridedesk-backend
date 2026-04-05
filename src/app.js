@@ -1,4 +1,4 @@
-require('dotenv').config()
+
 const express = require('express')
 const cors = require('cors')
 const postModel = require('./models/post.model')
@@ -75,9 +75,12 @@ app.post("/contact-email", upload.single(), async (req, res) => {
                 pass:process.env.PASSWORD
             }
         })
+
+        console.log(USER_EMAIL)
+
         
         const mailOptions = {
-            from: `"Portfolio Contact" <${process.env.USER_EMAIL}>`,
+            from: process.env.USER_EMAIL,
             to: process.env.ADMIN_EMAIL,
             replyTo: email,
             subject: `New Contact Message form ${namee}`,
