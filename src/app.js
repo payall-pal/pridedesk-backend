@@ -70,20 +70,21 @@ app.post("/contact-email", upload.single(), async (req, res) => {
 
         const transporter = nodemailer.createTransport({
             service: "gmail",
-            auth: {
-                user: process.env.EMAIL,      
-                pass: process.env.PASSWORD
+            auth:{
+                user:process.env.USER_EMAIL,      
+                pass:process.env.PASSWORD
             }
         })
         
         const mailOptions = {
-            from: req.body.email,
-            to: process.env.EMAIL,
+            from: `"Portfolio Contact" <${process.env.USER_EMAIL}>`,
+            to: process.env.ADMIN_EMAIL,
+            replyTo: email,
             subject: `New Contact Message form ${namee}`,
             text: `
             Name: ${namee},
             Email: ${email},
-            Message: ${message} `
+            Message: ${message}`
         }
 
 
