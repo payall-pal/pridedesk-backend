@@ -51,63 +51,61 @@ const upload = multer({ storage: multer.memoryStorage() })
 // Email data ko server pe daal rhe h then gmail pe send kr denge
 
 app.post("/contact-email", upload.single(), async (req, res) => {
-    console.log("1. sending POST request")
-    namee = req.body.name,
+   
+        namee = req.body.name,
         email = req.body.email,
         message = req.body.message
-    try {
 
-        const modell = await emailModel.create({
-            name: req.body.name,
-            email: req.body.email,
-            message: req.body.message
+    
+        await emailModel.create({
+            name: namee,
+            email: email,
+            message: message
         })
 
-        if(!process.env.EMAIL || !process.env.PASSWORD){
-            throw new Error("Can't access credentials")
-        }
+        try{
 
+            const transporter = nodemailer.createTransport({
+                service:"gmail",
+                auth:{
+                    user:process.env.USER_EMAIL,
+                    pass:process.env.PASSWORD
+                }
+            })
 
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth:{
-                user:process.env.USER_EMAIL,      
-                pass:process.env.PASSWORD
+            const mailOptions = {
+                from: process.env.USER_EMAIL,
+                to: process.env.ADMIN_EMAIL,
+                replyTo: email,
+                subject: "Contact Message",
+                text: `
+                Name: ${namee}
+                Email: ${email}
+                Message: ${message}
+                `
             }
-        })
 
-        console.log(USER_EMAIL)
-
-        
-        const mailOptions = {
-            from: process.env.USER_EMAIL,
-            to: process.env.ADMIN_EMAIL,
-            replyTo: email,
-            subject: `New Contact Message form ${namee}`,
-            text: `
-            Name: ${namee},
-            Email: ${email},
-            Message: ${message}`
-        }
+            await transporter.sendMail(mailOptions)
+            console.log("Email sent")
+            return res.status(201).json({
+                success: true,
+                message: "Email sent"
+            })
 
 
-
-        await transporter.sendMail(mailOptions)
-
-        return res.status(200).json({
-            success: true,
-            message: "Email Sent!"
-        })
-
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({
+        } catch{
+            console.log("Error sending Email!")
+            return res.status(500).json({
             success: false,
-            message: "Something went wrong"
+            message: "Error sending Email!"
         })
 
-    }
+        }
+        
 
+   
+
+  
 })
 
 
@@ -116,8 +114,10 @@ app.post("/contact-email", upload.single(), async (req, res) => {
 app.get("/email-data", async (req, res) => {
     const emailData = await emailModel.find()
 
+
     res.status(200).json({
         message: "Data fetched",
+        
         emailData
     })
 })
@@ -126,16 +126,16 @@ app.get("/email-data", async (req, res) => {
 
 app.post("/give-review", upload.single(), async (req, res) => {
 
-    name = req.body.name,
+    namee = req.body.name,
         email = req.body.email,
         review = req.body.review,
         rating = req.body.rating
 
     const revieww = reviewModel.create({
-        name: req.body.name,
-        email: req.body.email,
-        review: req.body.review,
-        rating: req.body.rating
+        name: namee,
+        email: email,
+        review: review,
+        rating: rating
     })
 
     try {
@@ -143,31 +143,33 @@ app.post("/give-review", upload.single(), async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: process.env.EMAIL,
-                pass: process.env.APP_PASSWORD
+                user: process.env.USER_EMAIL,
+                pass: process.env.PASSWORD
             }
         })
 
         const mailOptions = {
-            from: email,
-            to: process.env.EMAIL,
-            subject: `New Contact Message form ${name}`,
+            from: USER_EMAIL,
+            to: process.env.ADMIN_EMAIL,
+            replyTo: email,
+            subject: `New Contact Message form ${namee}`,
             text: `
-            Name: ${name},
+            Name: ${namee},
             Email: ${email},
             Review: ${review},
             Rating: ${rating}`
         }
 
         await transporter.sendMail(mailOptions)
-        res.status(200).json({
+        console.log("Email sent")
+        return res.status(200).json({
             success: true,
             message: "Email Sent!"
         })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({
+    } catch {
+        console.log("Error sending email")
+        return res.status(500).json({
             success: false,
             message: "Error sending email"
         })
@@ -178,13 +180,13 @@ app.post("/give-review", upload.single(), async (req, res) => {
 
 // Apply request
 app.post("/apply", upload.single(), async (req, res) => {
-    name = req.body.name,
+    namee = req.body.name,
         email = req.body.email,
         skills = req.body.skills,
         message = req.body.message
 
     const Data = applyModel.create({
-        name: name,
+        name: namee,
         email: email,
         skills: skills,
         message: message
@@ -195,17 +197,18 @@ app.post("/apply", upload.single(), async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: process.env.EMAIL,
-                pass: process.env.APP_PASSWORD
+                user: process.env.USER_EMAIL,
+                pass: process.env.PASSWORD
             }
         })
 
         const mailOptions = {
-            from: email,
-            to: process.env.EMAIL,
-            subject: `New message from ${name}`,
+            from: process.env.USER_EMAIL,
+            to: process.env.ADMIN_EMAIL,
+            replyTo: email,
+            subject: `New message from ${namee}`,
             text: `
-            Name: ${name},
+            Name: ${namee},
             Email: ${email},
             Skills: ${skills},
             Message: ${message}
@@ -213,15 +216,16 @@ app.post("/apply", upload.single(), async (req, res) => {
         }
 
         await transporter.sendMail(mailOptions)
-        res.status(200).json({
+        console.log("Email Sent")
+        return res.status(200).json({
             success: true,
             message: "Email Sent!",
 
         })
     }
-    catch (err) {
-        console.log(err)
-        res.status(500).json({
+    catch {
+        console.log("Error Sending Email")
+        return res.status(500).json({
             success: false,
             message: "Error sending email"
         })
