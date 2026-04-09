@@ -98,7 +98,7 @@ app.post("/contact-email", upload.single(), async (req, res) => {
 
 
         } catch(error){
-            console.log("Error sending Email!")
+            console.log(error)
             return res.status(500).json({
                 success: false,
             message: "Error sending Email!",
@@ -131,10 +131,10 @@ app.get("/email-data", async (req, res) => {
 
 app.post("/give-review", upload.single(), async (req, res) => {
 
-    namee = req.body.name,
-        email = req.body.email,
-        review = req.body.review,
-        rating = req.body.rating
+    const namee = req.body.name
+    const email = req.body.email
+        const review = req.body.review
+        const rating = req.body.rating
 
     await reviewModel.create({
         name: namee,
@@ -154,7 +154,7 @@ app.post("/give-review", upload.single(), async (req, res) => {
         })
 
         const mailOptions = {
-            from: USER_EMAIL,
+            from: process.env.USER_EMAIL,
             to: process.env.ADMIN_EMAIL,
             replyTo: email,
             subject: `New Contact Message form ${namee}`,
@@ -185,10 +185,10 @@ app.post("/give-review", upload.single(), async (req, res) => {
 
 // Apply request
 app.post("/apply", upload.single(), async (req, res) => {
-    namee = req.body.name,
-        email = req.body.email,
-        skills = req.body.skills,
-        message = req.body.message
+    const namee = req.body.name
+        const email = req.body.email
+        const skills = req.body.skills
+        const message = req.body.message
 
     await applyModel.create({
         name: namee,
