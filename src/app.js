@@ -65,8 +65,12 @@ app.post("/contact-email", upload.single(), async (req, res) => {
 
         try{
 
+            console.log("EMAIL:", process.env.USER_EMAIL);
+            console.log("PASS:", process.env.PASSWORD);
+
             const transporter = nodemailer.createTransport({
                 service:"gmail",
+                
                 auth:{
                     user:process.env.USER_EMAIL,
                     pass:process.env.PASSWORD
@@ -93,9 +97,10 @@ app.post("/contact-email", upload.single(), async (req, res) => {
             })
 
 
-        } catch{
+        } catch(error){
             console.log("Error sending Email!")
             return res.status(500).json({
+                error: error.message,
             success: false,
             message: "Error sending Email!"
         })
@@ -131,7 +136,7 @@ app.post("/give-review", upload.single(), async (req, res) => {
         review = req.body.review,
         rating = req.body.rating
 
-    const revieww = reviewModel.create({
+    await reviewModel.create({
         name: namee,
         email: email,
         review: review,
@@ -141,10 +146,10 @@ app.post("/give-review", upload.single(), async (req, res) => {
     try {
 
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            service:"gmail",
             auth: {
-                user: process.env.USER_EMAIL,
-                pass: process.env.PASSWORD
+                user:process.env.USER_EMAIL,
+                pass:process.env.PASSWORD
             }
         })
 
@@ -185,7 +190,7 @@ app.post("/apply", upload.single(), async (req, res) => {
         skills = req.body.skills,
         message = req.body.message
 
-    const Data = applyModel.create({
+    await applyModel.create({
         name: namee,
         email: email,
         skills: skills,
@@ -195,10 +200,13 @@ app.post("/apply", upload.single(), async (req, res) => {
     try {
 
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            service:"gmail",
+            // host:"smtp.gmail.com",
+            // port:465,
+            // secure: false,
             auth: {
-                user: process.env.USER_EMAIL,
-                pass: process.env.PASSWORD
+                user:process.env.USER_EMAIL,
+                pass:process.env.PASSWORD
             }
         })
 
