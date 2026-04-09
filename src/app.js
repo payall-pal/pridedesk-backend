@@ -100,9 +100,9 @@ app.post("/contact-email", upload.single(), async (req, res) => {
         } catch(error){
             console.log("Error sending Email!")
             return res.status(500).json({
+                success: false,
+            message: "Error sending Email!",
                 error: error.message,
-            success: false,
-            message: "Error sending Email!"
         })
 
         }
